@@ -1,4 +1,4 @@
-name = "weaver"
+name = "twister"
 version = "1.0.0"
 description = "Minimal library for creating and running permutations on Lists while ensuring runtime safety."
 
@@ -7,7 +7,7 @@ licences = ["Unlicense"]
 [repository]
 type = "github"
 user = "Octaeon"
-repo = "weaver"
+repo = "twister"
 
 target = "erlang"
 

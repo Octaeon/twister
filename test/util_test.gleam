@@ -1,5 +1,5 @@
 import gleam/option.{None, Some}
-import weaver/util
+import twister/util
 
 pub fn get_index_first_element_test() -> Nil {
   let l = [0, 1, 2, 3, 4]

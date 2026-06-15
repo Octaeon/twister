@@ -18,7 +18,7 @@ import gleam/list.{Continue, Stop}
 import gleam/option.{type Option, None, Some}
 import gleam/result
 import gleam/set
-import weaver/util
+import twister/util
 
 // ==== Types ====
 
