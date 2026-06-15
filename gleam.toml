@@ -1,0 +1,18 @@
+name = "weaver"
+version = "1.0.0"
+description = "Minimal library for creating and executing Permutations while ensuring runtime safety."
+
+licences = ["Unlicense"]
+
+[repository]
+type = "github"
+user = "Octaeon"
+repo = "weaver"
+
+target = "erlang"
+
+[dependencies]
+gleam_stdlib = ">= 1.0.0 and < 2.0.0"
+
+[dev_dependencies]
+gleeunit = ">= 1.0.0 and < 2.0.0"
