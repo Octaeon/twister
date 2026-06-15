@@ -183,6 +183,22 @@ fn run_generate_loop(
   }
 }
 
+// => Permutation transformations
+
+// / Transform a `Permutation` by shifting its' indices over while wrapping around.
+// / 
+// / ## Examples
+// / Shifting by 0 does nothing - acts like an identity function.
+// / 
+// / Shifting by a positive number shifts the indices to the right.
+// / 
+// / Shifting by a negative number shifts the indices to the left.
+// / 
+// pub fn shift(perm: Permutation, by c: Int) -> Permutation {
+
+//   todo
+// }
+
 // ==== Private utility functions ====
 
 fn map_modulo(indexes: List(Int), modulo: Int) -> List(Int) {
