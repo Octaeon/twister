@@ -1,4 +1,5 @@
 import gleam/int
+import gleam/list
 import gleeunit
 import weaver
 
@@ -223,4 +224,61 @@ pub fn run_generate_out_of_bounds_test() {
   let perm = weaver.from_list([2])
   assert weaver.run_generate(perm, ["whatever"], int.to_string) == ["2"]
     as "Run generate | Out of bounds generated"
+}
+
+pub fn fixed_point_empty_test() {
+  let perm = weaver.blank()
+  assert weaver.get_fixed_points(perm) == []
+    as "Fixed points | Empty permutation"
+}
+
+pub fn fixed_point_singleton_test() {
+  let perm = weaver.from_list([0])
+  assert weaver.get_fixed_points(perm) == [0]
+    as "Fixed points | Singleton permutation"
+}
+
+pub fn fixed_point_none_test() {
+  let perm = weaver.from_list([1, 0])
+  assert weaver.get_fixed_points(perm) == [] as "Fixed points | No fixed points"
+}
+
+pub fn fixed_point_identity_permutation_test() {
+  let identity = [0, 1, 2, 3, 4, 5]
+  let perm = weaver.from_list(identity)
+  assert weaver.get_fixed_points(perm) == identity
+    as "Fixed points | Identity permutation"
+}
+
+pub fn fixed_point_shifted_test() {
+  let perm = weaver.from_list([1, 2, 3, 4, 5, 0])
+  assert weaver.get_fixed_points(perm) == [] as "Fixed points | Shifted"
+}
+
+pub fn bijection_empty_test() {
+  let perm = weaver.blank()
+  assert weaver.bijection_for_length(perm) == 0
+    as "Bijection | Empty permutation"
+}
+
+pub fn bijection_singleton_test() {
+  let perm = weaver.from_list([0])
+  assert weaver.bijection_for_length(perm) == 1
+    as "Bijection | Singleton permutation"
+}
+
+pub fn bijection_no_0_test() {
+  let perm = weaver.from_list([1, 2, 3])
+  assert weaver.bijection_for_length(perm) == 0 as "Bijection | No 0"
+}
+
+pub fn bijection_no_2_test() {
+  let perm = weaver.from_list([0, 1, 3])
+  assert weaver.bijection_for_length(perm) == 2 as "Bijection | No 2"
+}
+
+pub fn bijection_reverse_test() {
+  let reverse = [0, 1, 2, 3, 4, 5] |> list.reverse()
+  let perm = weaver.from_list(reverse)
+  assert weaver.bijection_for_length(perm) == 6 as "Bijection | Reversed"
 }
