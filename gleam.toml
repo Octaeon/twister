@@ -1,6 +1,6 @@
 name = "weaver"
 version = "1.0.0"
-description = "Minimal library for creating and executing Permutations while ensuring runtime safety."
+description = "Minimal library for creating and running permutations on Lists while ensuring runtime safety."
 
 licences = ["Unlicense"]
 
