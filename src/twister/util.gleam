@@ -1,5 +1,6 @@
 //// Tiny module containing utility helper functions.
 //// 
+//// ## Note
 //// Unless you have a specific use case and no better (already existing) way to solve it,
 //// you should prefer other libraries or even your own code.
 //// 

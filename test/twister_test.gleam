@@ -2,6 +2,7 @@ import gleam/int
 import gleam/list
 import gleeunit
 import twister
+import twister/property
 
 pub fn main() -> Nil {
   gleeunit.main()
@@ -228,58 +229,58 @@ pub fn run_generate_out_of_bounds_test() {
 
 pub fn fixed_point_empty_test() {
   let perm = twister.blank()
-  assert twister.get_fixed_points(perm) == []
+  assert property.get_fixed_points(perm) == []
     as "Fixed points | Empty permutation"
 }
 
 pub fn fixed_point_singleton_test() {
   let perm = twister.from_list([0])
-  assert twister.get_fixed_points(perm) == [0]
+  assert property.get_fixed_points(perm) == [0]
     as "Fixed points | Singleton permutation"
 }
 
 pub fn fixed_point_none_test() {
   let perm = twister.from_list([1, 0])
-  assert twister.get_fixed_points(perm) == []
+  assert property.get_fixed_points(perm) == []
     as "Fixed points | No fixed points"
 }
 
 pub fn fixed_point_identity_permutation_test() {
   let identity = [0, 1, 2, 3, 4, 5]
   let perm = twister.from_list(identity)
-  assert twister.get_fixed_points(perm) == identity
+  assert property.get_fixed_points(perm) == identity
     as "Fixed points | Identity permutation"
 }
 
 pub fn fixed_point_shifted_test() {
   let perm = twister.from_list([1, 2, 3, 4, 5, 0])
-  assert twister.get_fixed_points(perm) == [] as "Fixed points | Shifted"
+  assert property.get_fixed_points(perm) == [] as "Fixed points | Shifted"
 }
 
 pub fn bijection_empty_test() {
   let perm = twister.blank()
-  assert twister.bijection_for_length(perm) == 0
+  assert property.bijection_for_length(perm) == 0
     as "Bijection | Empty permutation"
 }
 
 pub fn bijection_singleton_test() {
   let perm = twister.from_list([0])
-  assert twister.bijection_for_length(perm) == 1
+  assert property.bijection_for_length(perm) == 1
     as "Bijection | Singleton permutation"
 }
 
 pub fn bijection_no_0_test() {
   let perm = twister.from_list([1, 2, 3])
-  assert twister.bijection_for_length(perm) == 0 as "Bijection | No 0"
+  assert property.bijection_for_length(perm) == 0 as "Bijection | No 0"
 }
 
 pub fn bijection_no_2_test() {
   let perm = twister.from_list([0, 1, 3])
-  assert twister.bijection_for_length(perm) == 2 as "Bijection | No 2"
+  assert property.bijection_for_length(perm) == 2 as "Bijection | No 2"
 }
 
 pub fn bijection_reverse_test() {
   let reverse = [0, 1, 2, 3, 4, 5] |> list.reverse()
   let perm = twister.from_list(reverse)
-  assert twister.bijection_for_length(perm) == 6 as "Bijection | Reversed"
+  assert property.bijection_for_length(perm) == 6 as "Bijection | Reversed"
 }
