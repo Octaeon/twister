@@ -32,22 +32,48 @@ pub fn run_negative_index_default_test() {
     as "Run | Negative index = Default Error"
 }
 
-// pub fn negative_index_wraparound_test() {
-//   let perm = weaver.from_list([-1]) |> weaver.wraparound()
-//   assert weaver.run(perm, ["whatever"]) == Ok(["whatever"]) as "Run | Negative index wraparound"
-// }
-
 pub fn run_out_of_bounds_default_test() {
   let perm = weaver.from_list([2])
   assert weaver.run(perm, ["whatever"]) == Error(Nil)
     as "Run | Out of bounds = Default error"
 }
 
-// pub fn out_of_bounds_modulo_test() {
-//   let perm = weaver.from_list([2]) |> weaver.modulo()
-//   assert weaver.run(perm, ["whatever"]) == Ok(["whatever"])
-//     as "Run | Out of bounds index modulo"
-// }
+pub fn run_modulo_negative_index_test() {
+  let perm =
+    weaver.from_list([-1])
+    |> weaver.set_modulo(True)
+  assert weaver.run(perm, [0, 1, 2]) == Ok([2])
+    as "Run | Modulo negative index wraparound"
+}
+
+pub fn run_out_of_bounds_modulo_test() {
+  let perm =
+    weaver.from_list([0, 4])
+    |> weaver.set_modulo(True)
+  assert weaver.run(perm, [0, 1, 2]) == Ok([0, 1])
+    as "Run | Modulo out of bounds remainder"
+}
+
+pub fn run_modulo_empty_permutation_test() {
+  let perm =
+    weaver.blank()
+    |> weaver.set_modulo(True)
+  assert weaver.run(perm, [0]) == Ok([]) as "Run | Modulo empty permutation"
+}
+
+pub fn run_modulo_empty_list_test() {
+  let perm =
+    weaver.from_list([0])
+    |> weaver.set_modulo(True)
+  assert weaver.run(perm, []) == Error(Nil) as "Run | Modulo empty list"
+}
+
+pub fn run_modulo_both_empty_test() {
+  let perm =
+    weaver.blank()
+    |> weaver.set_modulo(True)
+  assert weaver.run(perm, []) == Ok([]) as "Run | Modulo both empty"
+}
 
 pub fn run_repeater_test() {
   let perm = weaver.from_list([0, 0, 0, 0])
@@ -81,7 +107,8 @@ pub fn run_default_empty_permutation_test() {
 
 pub fn run_default_empty_list_test() {
   let perm = weaver.from_list([0])
-  assert weaver.run_default(perm, [], "both are empty") == ["both are empty"]
+  assert weaver.run_default(perm, [], "there's nothing T-T")
+    == ["there's nothing T-T"]
     as "Run default | Empty list"
 }
 
@@ -115,6 +142,46 @@ pub fn run_default_repeater_test() {
   assert weaver.run_default(perm, ["whatever"], "huh?")
     == ["whatever", "whatever", "whatever", "whatever"]
     as "Run default | Repeater permutation"
+}
+
+pub fn run_default_modulo_negative_index_test() {
+  let perm =
+    weaver.from_list([-1])
+    |> weaver.set_modulo(True)
+  assert weaver.run_default(perm, [0, 1, 2], -1) == [2]
+    as "Run default | Modulo negative index wraparound"
+}
+
+pub fn run_default_out_of_bounds_modulo_test() {
+  let perm =
+    weaver.from_list([0, 4])
+    |> weaver.set_modulo(True)
+  assert weaver.run_default(perm, [0, 1, 2], -1) == [0, 1]
+    as "Run default | Modulo out of bounds remainder"
+}
+
+pub fn run_default_modulo_empty_permutation_test() {
+  let perm =
+    weaver.blank()
+    |> weaver.set_modulo(True)
+  assert weaver.run_default(perm, [0], -1) == []
+    as "Run default | Modulo empty permutation"
+}
+
+pub fn run_default_modulo_empty_list_test() {
+  let perm =
+    weaver.from_list([0])
+    |> weaver.set_modulo(True)
+  assert weaver.run_default(perm, [], -1) == [-1]
+    as "Run default | Modulo empty list"
+}
+
+pub fn run_default_modulo_both_empty_test() {
+  let perm =
+    weaver.blank()
+    |> weaver.set_modulo(True)
+  assert weaver.run_default(perm, [], -1) == []
+    as "Run default | Modulo both empty"
 }
 
 pub fn run_default_normal_from_list_test() {

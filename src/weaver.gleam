@@ -16,6 +16,7 @@
 import gleam/int
 import gleam/list
 import gleam/option.{type Option, None, Some}
+import gleam/result
 import weaver/util
 
 // ==== Types ====
@@ -32,7 +33,7 @@ import weaver/util
 /// Although the type is not `opaque`, you shouldn't modify it yourself unless you really need to, and there's no other way to achieve your goal.
 /// 
 pub type Permutation {
-  Permutation(max_index: Option(Int), output: List(Int))
+  Permutation(modulo: Bool, max_index: Option(Int), output: List(Int))
 }
 
 // ==== API Functions ====
@@ -44,7 +45,11 @@ pub type Permutation {
 /// When later running a permutation *on* some `List`, that `List` must have a length more than or equal to the largest index in the list of indexes within, or it will return `Error(Nil)`.
 /// 
 pub fn from_list(indexes l: List(Int)) -> Permutation {
-  Permutation(max_index: util.largest(l), output: list.reverse(l))
+  Permutation(
+    modulo: False,
+    max_index: util.largest(l),
+    output: list.reverse(l),
+  )
 }
 
 /// Create a new, blank `Permutation`.
@@ -52,7 +57,7 @@ pub fn from_list(indexes l: List(Int)) -> Permutation {
 /// This function is meant to be used as the starting point for constructing a `Permutation` using the builder pattern, by using the [`add`](weaver.html#add) function to add a new index at the end of the list of indexes.
 /// 
 pub fn blank() -> Permutation {
-  Permutation(max_index: None, output: [])
+  Permutation(modulo: False, max_index: None, output: [])
 }
 
 // => Builder
@@ -64,12 +69,16 @@ pub fn blank() -> Permutation {
 /// When later running a permutation *on* some `List`, that `List` must have a length more than or equal to the largest index in the list of indexes within, or it will return `Error(Nil)`.
 /// 
 pub fn add(perm: Permutation, index i: Int) -> Permutation {
-  let Permutation(old_max, output) = perm
+  let Permutation(modulo, old_max, output) = perm
   let new_max = case old_max {
     Some(prev_max) -> int.max(prev_max, i)
     None -> i
   }
-  Permutation(Some(new_max), [i, ..output])
+  Permutation(modulo, Some(new_max), [i, ..output])
+}
+
+pub fn set_modulo(perm: Permutation, to: Bool) -> Permutation {
+  Permutation(..perm, modulo: to)
 }
 
 // => Execution
@@ -84,11 +93,13 @@ pub fn add(perm: Permutation, index i: Int) -> Permutation {
 /// 
 pub fn run(perm: Permutation, on l: List(a)) -> Result(List(a), Nil) {
   case perm, list.length(l) {
-    Permutation(_, []), _ -> Ok([])
-    Permutation(None, _), _ -> Error(Nil)
-    Permutation(Some(max), non_empty), len if len >= max ->
+    Permutation(_, _, []), _ -> Ok([])
+    Permutation(_, None, _), _ -> Error(Nil)
+    Permutation(False, Some(max), non_empty), len if len >= max ->
       run_loop(l, non_empty, [])
-    Permutation(Some(_), _), _ -> Error(Nil)
+    Permutation(True, Some(_), non_empty), len if len > 0 ->
+      run_loop(l, non_empty |> map_modulo(list.length(l)), [])
+    Permutation(_, Some(_), _), _ -> Error(Nil)
   }
 }
 
@@ -111,12 +122,21 @@ fn run_loop(
 /// 
 /// This function always returns a `List(a)` by simply putting the provided `default` argument in the returned `List` whenever the requested index is out of bounds.
 /// 
+/// ## Note
+/// If while creating the `Permutation`, the [`set_modulo`](weaver.html#set_modulo) function was used, this function will behave identically to [`run`](weaver.html#run), as all of the indexes will definitely be within the provided `List`.
+/// 
 pub fn run_default(
   perm: Permutation,
   on l: List(a),
   default default: a,
 ) -> List(a) {
-  run_default_loop(l, perm.output, default, [])
+  case perm {
+    Permutation(False, _, []) -> []
+    Permutation(False, _, non_empty) ->
+      run_default_loop(l, non_empty, default, [])
+    Permutation(True, _, non_empty) ->
+      run_default_loop(l, non_empty |> map_modulo(list.length(l)), default, [])
+  }
 }
 
 fn run_default_loop(
@@ -136,4 +156,11 @@ fn run_default_loop(
         ..acc
       ])
   }
+}
+
+// ==== Private utility functions ====
+
+fn map_modulo(indexes: List(Int), modulo: Int) -> List(Int) {
+  indexes
+  |> list.map(fn(i) { int.modulo(i, modulo) |> result.unwrap(0) })
 }
