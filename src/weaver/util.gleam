@@ -3,8 +3,9 @@ import gleam/option.{type Option, None, Some}
 
 pub fn at(in: List(a), index index: Int) -> Result(a, Nil) {
   case index, in {
-    0, [head, ..] -> Ok(head)
+    remaining, _ if remaining < 0 -> Error(Nil)
     _, [] -> Error(Nil)
+    0, [head, ..] -> Ok(head)
     remaining, [_, ..rest] -> at(rest, remaining - 1)
   }
 }
