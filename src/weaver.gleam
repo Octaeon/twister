@@ -123,7 +123,7 @@ fn run_loop(
 /// This function always returns a `List(a)` by simply putting the provided `default` argument in the returned `List` whenever the requested index is out of bounds.
 /// 
 /// ## Note
-/// If while creating the `Permutation`, the [`set_modulo`](weaver.html#set_modulo) function was used, this function will behave identically to [`run`](weaver.html#run), as all of the indexes will definitely be within the provided `List`.
+/// If while creating the `Permutation`, the [`set_modulo`](weaver.html#set_modulo) function was used, this function will behave identically to [`run`](weaver.html#run), as all of the indexes will definitely be within the bounds of the provided `List`.
 /// 
 pub fn run_default(
   perm: Permutation,
@@ -131,27 +131,52 @@ pub fn run_default(
   default default: a,
 ) -> List(a) {
   case perm {
-    Permutation(False, _, []) -> []
+    Permutation(_, _, []) -> []
     Permutation(False, _, non_empty) ->
-      run_default_loop(l, non_empty, default, [])
+      run_generate_loop(l, non_empty, fn(_) { default }, [])
     Permutation(True, _, non_empty) ->
-      run_default_loop(l, non_empty |> map_modulo(list.length(l)), default, [])
+      run_generate_loop(
+        l,
+        non_empty |> map_modulo(list.length(l)),
+        fn(_) { default },
+        [],
+      )
   }
 }
 
-fn run_default_loop(
+/// Run a created `Permutation` on some `List`.
+/// 
+/// This function always returns a `List(a)` by simply generating a value in the returned `List` whenever the requested index is out of bounds, with the index in question as the input argument.
+/// 
+/// ## Note
+/// If while creating the `Permutation`, the [`set_modulo`](weaver.html#set_modulo) function was used, this function will behave identically to [`run`](weaver.html#run), as all of the indexes will definitely be within the bounds of the provided `List`.
+/// 
+pub fn run_generate(
+  perm: Permutation,
+  on l: List(a),
+  generate fun: fn(Int) -> a,
+) -> List(a) {
+  case perm {
+    Permutation(_, _, []) -> []
+    Permutation(False, _, non_empty) -> run_generate_loop(l, non_empty, fun, [])
+    Permutation(True, _, non_empty) ->
+      run_generate_loop(l, non_empty |> map_modulo(list.length(l)), fun, [])
+  }
+}
+
+fn run_generate_loop(
   over: List(a),
   indexes: List(Int),
-  default: a,
+  fun: fn(Int) -> a,
   acc: List(a),
 ) -> List(a) {
   case indexes {
     [] -> acc
     [index, ..rest] ->
-      run_default_loop(over, rest, default, [
+      run_generate_loop(over, rest, fun, [
         case util.at(over, index) {
           Ok(el) -> el
-          Error(Nil) -> default
+          Error(Nil) -> fun(index)
         },
         ..acc
       ])

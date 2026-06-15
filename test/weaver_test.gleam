@@ -1,3 +1,4 @@
+import gleam/int
 import gleeunit
 import weaver
 
@@ -124,13 +125,13 @@ pub fn run_default_singleton_test() {
     as "Run default | Single element"
 }
 
-pub fn run_default_negative_index_default_test() {
+pub fn run_default_negative_index_test() {
   let perm = weaver.from_list([-1])
   assert weaver.run_default(perm, ["whatever"], "negative") == ["negative"]
     as "Run default | Negative index replaced with default"
 }
 
-pub fn run_default_out_of_bounds_default_test() {
+pub fn run_default_out_of_bounds_test() {
   let perm = weaver.from_list([2])
   assert weaver.run_default(perm, ["whatever"], "out of bounds")
     == ["out of bounds"]
@@ -210,4 +211,16 @@ pub fn builder_equivalence_test() {
     |> weaver.add(4)
   assert built == weaver.from_list([0, 2, 1, 4])
     as "Builder equivalent to from_list"
+}
+
+pub fn run_generate_negative_index_test() {
+  let perm = weaver.from_list([-1])
+  assert weaver.run_generate(perm, ["whatever"], int.to_string) == ["-1"]
+    as "Run generate | Negative index generated"
+}
+
+pub fn run_generate_out_of_bounds_test() {
+  let perm = weaver.from_list([2])
+  assert weaver.run_generate(perm, ["whatever"], int.to_string) == ["2"]
+    as "Run generate | Out of bounds generated"
 }
