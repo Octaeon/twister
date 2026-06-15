@@ -44,10 +44,7 @@ pub type Permutation {
 /// When later running a permutation *on* some `List`, that `List` must have a length more than or equal to the largest index in the list of indexes within, or it will return `Error(Nil)`.
 /// 
 pub fn from_list(indexes l: List(Int)) -> Permutation {
-  case list.max(l, int.compare) {
-    Ok(largest) -> Permutation(max_index: Some(largest), output: l)
-    Error(_) -> Permutation(max_index: None, output: [])
-  }
+  Permutation(max_index: util.largest(l), output: list.reverse(l))
 }
 
 /// Create a new, blank `Permutation`.
